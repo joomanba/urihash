@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+<!-- 			<param name="ConversionPattern" value="%-5p: %c - %m%n" /> -->
+			<!-- <param name="ConversionPattern" value="%d{dd,HH:mm:ss}   %5p > %m ((%C{1}.%M:%L))%n" /> -->
+			<param name="ConversionPattern" value="%-6r [%15.15t] %-5p %30.30c - %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="org.springframework" additivity="false">
+		<level value="info" />
+		<appender-ref ref="console" />
+	</logger>
+
+	<logger name="iceberg.framework.core.message.MessageSourceUtils" additivity="false">
+		<level value="error" />
+		<appender-ref ref="console" />
+	</logger>
+
+	<!-- 
+    <logger name="org.hibernate.SQL" level="FATAL" />
+    <logger name="org.hibernate.type" level="FATAL" />
+    <logger name="org.hibernate.type.BasicTypeRegistry" level="FATAL" />
+     
+	<logger name="org.hibernate">
+	    <level value="debug" />
+	    <appender-ref ref="console"/>
+	</logger>
+-->
+
+    <logger name="iceberg.deployer.ui.service" additivity="false">
+        <level value="info" />
+        <appender-ref ref="console" />
+    </logger>
+<!-- 
+	<logger name="org.springframework.transaction.interceptor.TransactionInterceptor" additivity="false">
+		<level value="trace" />
+		<appender-ref ref="console" />
+	</logger>
+ -->	
+    <logger name="org.hibernate.cache.ehcache.AbstractEhcacheRegionFactory" additivity="false">
+        <level value="error" />
+    </logger> 
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" additivity="false">
+        <level value="warn" />
+    </logger> 
+    <logger name="org.hibernate.cache.ehcache.internal.strategy.EhcacheAccessStrategyFactoryImpl" additivity="false">
+        <level value="error" />
+    </logger> 
+    <logger name="iceberg.framework.web.context" additivity="false">
+        <level value="error" />
+        <appender-ref ref="console" />
+    </logger>	 
+    <logger name="iceberg.framework.webservice.client" additivity="false">
+        <level value="error" />
+        <appender-ref ref="console" />
+    </logger>    
+
+	<root>
+		<priority value="warn" />
+		<appender-ref ref="console" />
+	</root>
+</log4j:configuration>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	
+	<bean id="uriHashAccessManager" factory-bean="redisUriHashAccessManagerFactory" factory-method="create" />
+	
+	<bean id="redisUriHashAccessManagerFactory" class="iceberg.deployer.ui.domain.urihash.spring.RedisUriHashAccessManagerFactory">
+		<property name="accessorMap">
+			<map>
+				<entry key="dev:mccommon" value="localhost, redis.cluster.local:7000"/>
+			</map>
+		</property>
+	</bean>
+</beans>

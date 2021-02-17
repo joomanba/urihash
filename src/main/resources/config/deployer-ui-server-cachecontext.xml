@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xsi:schemaLocation="http://www.grails.org/schema/context http://grails.org/schema/context/grails-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<bean id="uriHashAccessManager" factory-bean="redisUriHashAccessManagerFactory" factory-method="create" />
+	
+	<bean id="redisUriHashAccessManagerFactory" class="iceberg.deployer.ui.domain.urihash.spring.RedisUriHashAccessManagerFactory">
+		<property name="accessorMap">
+			<map>
+				<entry key="dev:mcshop" value="10.52.220.88" />
+				<entry key="test:mcshop" value="10.52.221.88" />
+				<entry key="stage:mcshop" value="10.52.169.245" />
+				<entry key="prod:mcshop" value="10.52.167.249, 10.52.167.243, mcpc-prd-redis-shop.y4qww7.clustercfg.apn2.cache.amazonaws.com" />
+				
+				<entry key="dev:mccommon" value="10.52.220.88" />
+				<entry key="test:mccommon" value="10.52.221.88" />
+				<entry key="stage:mccommon" value="10.52.169.245" />
+				<entry key="prod:mccommon" value="10.52.167.252, 10.52.167.246, mc-prd-redis-common.y4qww7.clustercfg.apn2.cache.amazonaws.com" />
+				
+				<entry key="dev:pc" value="10.52.220.108" />
+				<entry key="test:pc" value="10.52.220.108" />
+				<entry key="stage:pc" value="10.52.169.208" />
+				<entry key="prod:pc" value="10.52.152.240, pc-prd-redis-common.y4qww7.clustercfg.apn2.cache.amazonaws.com" />
+				
+				<entry key="dev:global" value="10.52.220.208" />
+				<entry key="test:global" value="10.52.220.208" />
+				<entry key="stage:global" value="10.52.220.208" />
+				<entry key="prod:global" value="10.52.157.90" />
+			</map>
+		</property>
+	</bean>
+
+	<beans profile="local">
+		<bean id="redisUriHashAccessManagerFactory" class="iceberg.deployer.ui.domain.urihash.spring.RedisUriHashAccessManagerFactory">
+			<property name="accessorMap">
+				<map>
+					<entry key="dev:mcshop" value="localhost" />
+					<entry key="test:mcshop" value="localhost" />
+					<entry key="stage:mcshop" value="localhost:6380" />
+					<entry key="prod:mcshop" value="localhost:6380" />
+					
+					<entry key="dev:mccommon" value="localhost" />
+					<entry key="test:mccommon" value="localhost" />
+					<entry key="stage:mccommon" value="localhost:6380" />
+					<entry key="prod:mccommon" value="localhost:6380" />
+					
+					<entry key="dev:pc" value="localhost" />
+					<entry key="test:pc" value="localhost" />
+					<entry key="stage:pc" value="localhost" />
+					<entry key="prod:pc" value="localhost" />
+					
+					<entry key="dev:global" value="localhost" />
+					<entry key="test:global" value="localhost" />
+					<entry key="stage:global" value="localhost" />
+					<entry key="prod:global" value="localhost" />
+				</map>
+			</property>
+		</bean>
+	</beans>
+	
+</beans>
