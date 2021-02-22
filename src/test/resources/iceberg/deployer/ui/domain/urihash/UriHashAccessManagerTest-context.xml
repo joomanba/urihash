@@ -7,7 +7,16 @@
 	<bean id="redisUriHashAccessManagerFactory" class="iceberg.deployer.ui.domain.urihash.spring.RedisUriHashAccessManagerFactory">
 		<property name="accessorMap">
 			<map>
-				<entry key="dev:mccommon" value="localhost, redis.cluster.local:7000"/>
+				<entry key="prod:mcshop"  value="localhost"/>
+				<entry key="prod:mccommon"  value="localhost"/>
+				<entry key="prod:pc"  value="localhost"/>
+			</map>
+		</property>
+		<property name="accessorMapCluster">
+			<map>
+				<entry key="prod:mcshop"  value="redis.cluster.local:7000,redis.cluster.local:7001,redis.cluster.local:7002"/>
+				<entry key="prod:mccommon"  value="redis.cluster.local:7000,redis.cluster.local:7001,redis.cluster.local:7002"/>
+				<entry key="prod:pc"  value="redis.cluster.local:7000,redis.cluster.local:7001,redis.cluster.local:7002"/>
 			</map>
 		</property>
 	</bean>

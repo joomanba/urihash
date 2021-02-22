@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import iceberg.deployer.ui.dto.extension.Profile;
 
-@Ignore("requires redis on localhost:6378, 6379 to run.")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
 public class UriHashAccessManagerTest {
@@ -32,7 +31,7 @@ public class UriHashAccessManagerTest {
 	@Test
 	public void uriHashAccessManagerTest() {
 		logger.info("start testing!!!!!!!!!!!!");
-		List<UriHashAccess> uriHashAccesses = uriHashAccessManager.lookup(new UriHashAccessKey(Profile.dev, "mccommon"));
+		List<UriHashAccess> uriHashAccesses = uriHashAccessManager.lookup(new UriHashAccessKey(Profile.prod, "pc"));
 		
 		logger.info("found {} accessors", uriHashAccesses.size());
 		
