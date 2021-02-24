@@ -31,7 +31,7 @@ public class UriHashAccessManagerTest {
 	@Test
 	public void uriHashAccessManagerTest() {
 		logger.info("start testing!!!!!!!!!!!!");
-		List<UriHashAccess> uriHashAccesses = uriHashAccessManager.lookup(new UriHashAccessKey(Profile.prod, "pc"));
+		List<UriHashAccess> uriHashAccesses = uriHashAccessManager.lookup(new UriHashAccessKey(Profile.prod, "mcshop"));
 		
 		logger.info("found {} accessors", uriHashAccesses.size());
 		

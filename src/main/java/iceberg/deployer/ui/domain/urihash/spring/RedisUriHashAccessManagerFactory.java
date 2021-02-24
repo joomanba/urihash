@@ -40,7 +40,6 @@ public class RedisUriHashAccessManagerFactory {
 	private Map<String, String> accessorMap;
 	private Map<String, String> accessorMapCluster;
 
-
 	/*
 	 * constants
 	 */
@@ -51,16 +50,29 @@ public class RedisUriHashAccessManagerFactory {
 		UriHashAccessManagerImpl manager = new UriHashAccessManagerImpl();
 		
 		for (Map.Entry<String, String> e : accessorMap.entrySet()) {
-			Matcher matcher1 = profileHashKeypattern.matcher(e.getKey());
-			if (!matcher1.matches()) {
-				throw new UriHashAccessException("input '" + e.getKey() + "' does not match 'profile:hashKey' pattern");
-			}
-			String strProfile = matcher1.group(1);
-			Profile profile = Profile.valueOf(strProfile);
-			String hashKey = matcher1.group(2);
-			UriHashAccessKey accessKey = new UriHashAccessKey(profile, hashKey);
-			
-			Matcher matcher2 = ipPortPattern.matcher(e.getValue());
+			setUriHashAccessManager(manager, e, false);
+		}
+
+		for (Map.Entry<String, String> e : accessorMapCluster.entrySet()) {
+			setUriHashAccessManager(manager, e, true);
+		}
+
+		return manager;
+	}
+
+	private void setUriHashAccessManager(UriHashAccessManagerImpl manager, Map.Entry<String, String> e, boolean isClusterMode) {
+		Matcher matcher1 = profileHashKeypattern.matcher(e.getKey());
+		if (!matcher1.matches()) {
+			throw new UriHashAccessException("input '" + e.getKey() + "' does not match 'profile:hashKey' pattern");
+		}
+		String strProfile = matcher1.group(1);
+		Profile profile = Profile.valueOf(strProfile);
+		String hashKey = matcher1.group(2);
+		UriHashAccessKey accessKey = new UriHashAccessKey(profile, hashKey);
+
+		Matcher matcher2 = ipPortPattern.matcher(e.getValue());
+
+		if (isClusterMode == false) {
 			while (matcher2.find()) {
 				String strIp = matcher2.group(1);
 				String strPort = matcher2.group(2);
@@ -68,29 +80,21 @@ public class RedisUriHashAccessManagerFactory {
 					strPort = "6379";
 				}
 				int port = Integer.parseInt(strPort);
-				
+
 				logger.debug("registering accessKey [{}] maps to {}:{}", accessKey, strIp, port);
 
-				RedisTemplate<String, Object> redisTemplate = getRedisTemplate(accessKey, strIp, port);
+				JedisConnectionFactory connectionFactory= new JedisConnectionFactory();
+				connectionFactory.setHostName(strIp);
+				connectionFactory.setPort(port);
+
+				RedisTemplate<String, Object> redisTemplate = getRedisTemplate(connectionFactory);
 				HashRedisCacheManager cacheManager = new HashRedisCacheManager(redisTemplate, redisTemplate);
 
 				int defaultExpireTime = 31536000; //1년: 3600 * 24 * 365 으로 설정
 				cacheManager.setDefaultExpiration(defaultExpireTime);
 				manager.register(accessKey, new RedisUriHashAccess(accessKey, cacheManager));
 			}
-		}
-
-		for (Map.Entry<String, String> e : accessorMapCluster.entrySet()) {
-			Matcher matcher1 = profileHashKeypattern.matcher(e.getKey());
-			if (!matcher1.matches()) {
-				throw new UriHashAccessException("input '" + e.getKey() + "' does not match 'profile:hashKey' pattern");
-			}
-			String strProfile = matcher1.group(1);
-			Profile profile = Profile.valueOf(strProfile);
-			String hashKey = matcher1.group(2);
-			UriHashAccessKey accessKey = new UriHashAccessKey(profile, hashKey);
-
-			Matcher matcher2 = ipPortPattern.matcher(e.getValue());
+		}else {
 			List<String> clusterNode = new ArrayList<String>();
 
 			while (matcher2.find()) {
@@ -105,39 +109,17 @@ public class RedisUriHashAccessManagerFactory {
 				logger.debug("registering accessKey [{}] maps to {}:{}", accessKey, strIp, port);
 			}
 
-			RedisTemplate<String, Object> redisTemplate = getRedisTemplate(accessKey, clusterNode);
+			JedisConnectionFactory connectionFactory = new JedisConnectionFactory(new RedisClusterConfiguration(clusterNode));
+			RedisTemplate<String, Object> redisTemplate = getRedisTemplate(connectionFactory);
 			HashRedisCacheManager cacheManager = new HashRedisCacheManager(redisTemplate, redisTemplate);
 
 			int defaultExpireTime = 31536000; //1년: 3600 * 24 * 365 으로 설정
 			cacheManager.setDefaultExpiration(defaultExpireTime);
 			manager.register(accessKey, new RedisUriHashAccess(accessKey, cacheManager));
 		}
-
-		return manager;
-	}
-	
-	
-	private RedisTemplate<String, Object> getRedisTemplate(UriHashAccessKey accessKey, List<String> clusterNode) {
-
-		JedisConnectionFactory connectionFactory;
-
-		connectionFactory = new JedisConnectionFactory(new RedisClusterConfiguration(clusterNode));
-		connectionFactory.setUsePool(false);
-		connectionFactory.afterPropertiesSet();
-
-		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
-		redisTemplate.setConnectionFactory(connectionFactory);
-		redisTemplate.afterPropertiesSet();
-
-		return redisTemplate;
-
 	}
 
-	private RedisTemplate<String, Object> getRedisTemplate(UriHashAccessKey accessKey, String ip, int port) {
-
-		JedisConnectionFactory connectionFactory= new JedisConnectionFactory();
-		connectionFactory.setHostName(ip);
-		connectionFactory.setPort(port);
+	private RedisTemplate<String, Object> getRedisTemplate(JedisConnectionFactory connectionFactory) {
 
 		connectionFactory.setUsePool(false);
 		connectionFactory.afterPropertiesSet();
